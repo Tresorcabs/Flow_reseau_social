@@ -1,0 +1,73 @@
+{% extends "core/base.html" %}
+{% block content %}
+<!--
+  <h2>Bienvenue, {{ request.user.username }} !</h2>
+  <img src="{{ user.profile.image.url }}" width="100" height="100">
+  <p>{{ user.profile.bio }}</p>
+  <p><a href="{% url 'edit-profile' %}">Modifier mon profil</a></p>
+  <p><a href="{% url 'logout' %}">Se déconnecter</a></p>
+-->
+
+<!-- Navbar -->
+<nav class="bg-white shadow mb-8">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="flex justify-between items-center h-16">
+      <!-- Logo -->
+      <div class="flex-shrink-0 text-xl font-bold text-blue-600">
+        Flow
+      </div>
+      <!-- Links -->
+      <div class="hidden md:flex space-x-8">
+        <a href="/" class="text-gray-700 hover:text-blue-600 font-medium">Accueil</a>
+        <a href="/posts/" class="text-gray-700 hover:text-blue-600 font-medium">Posts</a>
+      </div>
+      <!-- Icons -->
+      <div class="flex items-center space-x-4">
+        <button><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700 hover:text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 00-9.33-5.03M9 17h.01M12 17h.01M15 17h.01M9 21h6" /></svg></button>
+        <button><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700 hover:text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" /></svg></button>
+        <a href="/profile/">
+          <img src="{{ user.profile.image.url }}" alt="avatar" class="h-8 w-8 rounded-full object-cover">
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<main class="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-6">
+  <!-- Posts 
+  <section class="md:col-span-2 space-y-4">
+    {% for post in posts %}
+      <div class="bg-white p-4 rounded shadow">
+        <div class="flex items-center space-x-3">
+          <img src="{{ post.author.profile.avatar.url }}" alt="avatar" class="h-10 w-10 rounded-full">
+          <div>
+            <p class="font-semibold">{{ post.author.username }}</p>
+            <p class="text-sm text-gray-500">{{ post.created_at }}</p>
+          </div>
+        </div>
+        <p class="mt-4 text-gray-800">{{ post.content }}</p>
+      </div>
+    {% endfor %}
+  </section>-->
+
+  <!-- Suggestions de profils -->
+  <aside class="space-y-4">
+    <h2 class="text-lg font-semibold text-gray-700">Profils à suivre</h2>
+    {% for profile in suggestions %}
+      <div class="flex items-center justify-between bg-white p-3 rounded shadow">
+        <div class="flex items-center space-x-3">
+          <img src="{{ profile.image.url }}" alt="avatar" class="h-8 w-8 rounded-full">
+          <p class="font-medium">{{ profile.user.username }}</p>
+        </div>
+        <form method="post" action="{% url 'follow' profile.user.username %}">
+          {% csrf_token %}
+          <button class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600">Suivre</button>
+        </form>
+      </div>
+    {% endfor %}
+  </aside>
+</main>
+
+
+{% endblock %}
