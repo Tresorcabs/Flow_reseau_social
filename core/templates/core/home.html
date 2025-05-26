@@ -1,4 +1,6 @@
 {% extends "core/base.html" %}
+{% load core_extras %}
+
 {% block content %}
 <!--
   <h2>Bienvenue, {{ request.user.username }} !</h2>
@@ -8,33 +10,83 @@
   <p><a href="{% url 'logout' %}">Se déconnecter</a></p>
 -->
 
-<!-- Navbar -->
-<nav class="bg-white shadow mb-8">
-  <div class="max-w-7xl mx-auto px-4">
-    <div class="flex justify-between items-center h-16">
-      <!-- Logo -->
-      <div class="flex-shrink-0 text-xl font-bold text-blue-600">
-        Flow
+<!-- Main Content -->
+<main class="p-6 max-w-5xl mx-auto">
+
+  <!-- Affichage des messages-->
+  {% if messages %}
+  <div class="max-w-2xl mx-auto mt-4">
+    {% for message in messages %}
+      <div class="p-3 mb-2 rounded text-white 
+        {% if message.tags == 'success' %}bg-green-500
+        {% elif message.tags == 'error' %}bg-red-500
+        {% else %}bg-gray-700{% endif %}">
+        {{ message }}
       </div>
-      <!-- Links -->
-      <div class="hidden md:flex space-x-8">
-        <a href="/" class="text-gray-700 hover:text-blue-600 font-medium">Accueil</a>
-        <a href="/posts/" class="text-gray-700 hover:text-blue-600 font-medium">Posts</a>
-      </div>
-      <!-- Icons -->
-      <div class="flex items-center space-x-4">
-        <button><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700 hover:text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 00-9.33-5.03M9 17h.01M12 17h.01M15 17h.01M9 21h6" /></svg></button>
-        <button><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700 hover:text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" /></svg></button>
-        <a href="/profile/">
-          <img src="{{ user.profile.image.url }}" alt="avatar" class="h-8 w-8 rounded-full object-cover">
-        </a>
+    {% endfor %}
+  </div>
+{% endif %}
+
+
+  <div class="max-w-5xl mx-auto mb-10">
+    <div class="bg-white shadow rounded-lg p-4 flex items-start space-x-4">
+      <!-- Avatar -->
+      <a href="{% url 'profile' user.username%}">
+      <img src="{{ user.profile.image.url }}" alt="Avatar" class="w-12 h-12 rounded-full object-cover">
+  
+      <!-- Zone "Partages ton Flow ?" -->
+      <div class="flex-1">
+        <button id="showPostForm" class="w-full text-left text-gray-500 bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-full">
+          Partages ton Flow, {{ user.username }} !
+        </button>
       </div>
     </div>
   </div>
-</nav>
 
-<!-- Main Content -->
-<main class="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-6">
+  <!-- Modal de création de post -->
+  <div id="postModal" class="fixed inset-0 bg-black-200 backdrop-blur-sm hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl mx-4 transform transition-all">
+      <!-- En-tête du modal -->
+      <div class="border-b border-gray-300 p-4 flex justify-between items-center">
+        <h3 class="text-xl font-semibold">Créer un post</h3>
+        <button id="closeModal" class="text-gray-500 hover:text-gray-700">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      
+      <!-- Contenu du modal -->
+      <div class="p-4">
+        <form method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="flex items-start space-x-4 mb-4">
+            <img src="{{ user.profile.image.url }}" alt="Avatar" class="w-10 h-10 rounded-full object-cover">
+            <div class="flex-1">
+              {% for field in form %}
+                <div class="mb-4">
+                  {{ field }}
+                  {% if field.errors %}
+                    <p class="text-red-500 text-sm">{{ field.errors }}</p>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="flex justify-end space-x-2">
+            <button type="button" id="cancelPost" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg">
+              Annuler
+            </button>
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+              Publier
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
   <!-- Posts 
   <section class="md:col-span-2 space-y-4">
     {% for post in posts %}
@@ -51,23 +103,199 @@
     {% endfor %}
   </section>-->
 
+        <!-- 📰 Posts -->
+        <div class="md:col-span-2 space-y-4">
+          <h2 class="text-lg font-semibold mb-4 p-fixed">Fil d'actualités</h2>
+          {% for post in posts %}
+          <div class="bg-white shadow rounded-lg p-4 mb-6 relative">
+              <div class="flex items-center mb-2">
+                <a href="{% url 'profile' post.author.username%}">
+                  <img src="{{ post.author.profile.image.url }}" alt="" class="w-10 h-10 rounded-full object-cover mr-3">
+                </a>
+                  <div>
+                      <a href="{% url 'profile' post.author.username %}" class="font-bold text-lg">{{ post.author.username }}</a><br>
+                      <span class="text-sm text-gray-500">{{ post.created_at|time_since }}</span>
+                  </div>
+                  {% if post.author != request.user %}
+                    {% if not post.author|is_followed_by:request.user %}
+                      <form method="post" action="{% url 'follow_user' post.author.username %}" class="absolute top-6 right-4">
+                        {% csrf_token %}
+                        <button class=" flex gap-2 items-center bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 cursor-pointer">
+                          <i data-lucide="plus" class="w-4"></i> Suivre
+                        </button>
+                      </form>
+                    {% endif %}
+                  {% endif %}
+              </div>
+              <p class="mb-2">{{ post.content }}</p>
+              {% if post.image %}
+                  <img src="{{ post.image.url }}" alt="" class="w-full rounded mt-2 mb-2">
+              {% endif %}
+          
+          <div class="flex flex-row border-t-1 border-gray-200 pt-2 mt-2 gap-2">
+            <!-- Colonne 1 : Like -->
+            <div class="w-1/2">
+              <button 
+                type="button" 
+                class="like-btn group w-full flex items-center justify-center gap-2 py-2 rounded hover:bg-blue-50 transition"
+                onclick="toggleLike(this)"
+                aria-label="J'aime"
+              >
+                <!-- SVG rempli bleu quand liké, gris sinon -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="like-icon w-6 h-6 transition-colors" viewBox="0 0 24 24" fill="#64748b" stroke="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-thumbs-up-icon lucide-thumbs-up"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/></svg>
+                <span class="like-label text-base font-medium transition-colors">J'aime</span>
+              </button>
+            </div>
+            <!-- Colonne 2 : Partager -->
+            <div class="w-1/2">
+              <button 
+                type="button" 
+                class="share-btn w-full flex items-center justify-center gap-2 py-2 rounded hover:bg-blue-50 transition"
+                aria-label="Partager"
+                onclick="alert('Fonctionnalité de partage à venir !')"
+              >
+                <!-- Icône de partage SVG -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-gray-500" viewBox="0 0 24 24" fill="currentColor" stroke="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-forward-icon lucide-forward"><path d="m15 17 5-5-5-5"/><path d="M4 18v-2a4 4 0 0 1 4-4h12"/></svg>
+                
+                <span class="text-base font-medium text-gray-600">Partager</span>
+              </button>
+            </div>
+          </div>
+          <style>
+            .like-btn .like-icon,
+            .like-btn .like-label {
+              color: #64748b;
+              fill: #64748b;
+              transition: color 0.2s, fill 0.2s;
+            }
+            .like-btn.liked .like-icon,
+            .like-btn.liked .like-label {
+              color: #2563eb;
+              fill: #2563eb;
+            }
+            .like-btn:hover .like-icon,
+            .like-btn:hover .like-label {
+              color: #2563eb;
+              fill: #2563eb;
+            }
+            .like-btn.liked .like-icon {
+              fill: #2563eb;
+            }
+            .like-btn .like-icon {
+              fill: #64748b;
+            }
+          </style>
+          <script>
+            function toggleLike(btn) {
+              btn.classList.toggle('liked');
+              // Changer la couleur de remplissage du SVG
+              const icon = btn.querySelector('.like-icon');
+              if (btn.classList.contains('liked')) {
+                icon.setAttribute('fill', '#2563eb');
+              } else {
+                icon.setAttribute('fill', '#64748b');
+              }
+            }
+          </script>
+          </div>
+          {% empty %}
+          <p>Aucun post à afficher.</p>
+          {% endfor %}
+      </div>
+
   <!-- Suggestions de profils -->
-  <aside class="space-y-4">
-    <h2 class="text-lg font-semibold text-gray-700">Profils à suivre</h2>
+  <aside class="md:col-span-1 space-y-4">
+    <h2 class="text-lg font-semibold text-gray-700">Suggestion de Profils à suivre</h2>
     {% for profile in suggestions %}
-      <div class="flex items-center justify-between bg-white p-3 rounded shadow">
-        <div class="flex items-center space-x-3">
-          <img src="{{ profile.image.url }}" alt="avatar" class="h-8 w-8 rounded-full">
-          <p class="font-medium">{{ profile.user.username }}</p>
-        </div>
-        <form method="post" action="{% url 'follow' profile.user.username %}">
+      <div class="flex items-center justify-between bg-white p-3 rounded-lg shadow">
+        <a href="{% url 'profile' profile.username%}">
+          <div class="flex items-center space-x-3">
+            <img src="{{ profile.profile.image.url }}" alt="avatar" class="h-12 w-12 object-cover rounded-full">
+            
+            <p class="font-medium">{{ profile.username }}</p>
+          </div>
+        </a>
+        <form method="post" action="{% url 'follow_user' profile.username %}">
           {% csrf_token %}
-          <button class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600">Suivre</button>
+          <button class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 cursor-pointer">Suivre</button>
         </form>
+        {% empty %}
+        <p class="text-sm text-gray-500">Aucune suggestion disponible.</p>
       </div>
     {% endfor %}
   </aside>
+</div>  
 </main>
 
+<style>
+  /* Styles pour le modal */
+  #postModal {
+    transition: all 0.3s ease-in-out;
+    display: flex;
+  }
+  
+  #postModal.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+  
+  #postModal:not(.hidden) {
+    opacity: 1;
+  }
+  
+  /* Style pour le champ de texte */
+  #postModal textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 0.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    resize: vertical;
+  }
+  
+  #postModal textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+  }
+</style>
+
+<script>
+  const modal = document.getElementById('postModal');
+  const showButton = document.getElementById('showPostForm');
+  const closeButton = document.getElementById('closeModal');
+  const cancelButton = document.getElementById('cancelPost');
+
+  function showModal() {
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function hideModal() {
+    modal.classList.add('hidden');
+    document.body.style.overflow = 'auto';
+  }
+
+  showButton.addEventListener('click', showModal);
+  closeButton.addEventListener('click', hideModal);
+  cancelButton.addEventListener('click', hideModal);
+
+  // Fermer le modal si on clique en dehors
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      hideModal();
+    }
+  });
+
+  // Empêcher la fermeture si on clique sur le contenu du modal
+  modal.querySelector('.bg-white').addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
+</script>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+  lucide.createIcons();
+</script>
 
 {% endblock %}

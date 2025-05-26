@@ -31,6 +31,8 @@ class Post(models.Model):
     content = models.TextField()
     image = models.ImageField(upload_to='post/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    
+    class Meta:
+        ordering = ['-created_at'] # posts les plus résents en premier
+        
     def __str__(self):
         return f"{self.author.username}'s post at {self.created_at}"

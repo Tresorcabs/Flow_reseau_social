@@ -49,6 +49,54 @@
         "documentation": {}
     },
     {
+        "label": "template",
+        "importPath": "django",
+        "description": "django",
+        "isExtraImport": true,
+        "detail": "django",
+        "documentation": {}
+    },
+    {
+        "label": "forms",
+        "importPath": "django",
+        "description": "django",
+        "isExtraImport": true,
+        "detail": "django",
+        "documentation": {}
+    },
+    {
+        "label": "Follow",
+        "importPath": "core.models",
+        "description": "core.models",
+        "isExtraImport": true,
+        "detail": "core.models",
+        "documentation": {}
+    },
+    {
+        "label": "timezone",
+        "importPath": "django.utils",
+        "description": "django.utils",
+        "isExtraImport": true,
+        "detail": "django.utils",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "timedelta",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
         "label": "admin",
         "importPath": "django.contrib",
         "description": "django.contrib",
@@ -81,11 +129,11 @@
         "documentation": {}
     },
     {
-        "label": "forms",
-        "importPath": "django",
-        "description": "django",
+        "label": "User",
+        "importPath": "django.contrib.auth.models",
+        "description": "django.contrib.auth.models",
         "isExtraImport": true,
-        "detail": "django",
+        "detail": "django.contrib.auth.models",
         "documentation": {}
     },
     {
@@ -201,6 +249,14 @@
         "documentation": {}
     },
     {
+        "label": "get_object_or_404",
+        "importPath": "django.shortcuts",
+        "description": "django.shortcuts",
+        "isExtraImport": true,
+        "detail": "django.shortcuts",
+        "documentation": {}
+    },
+    {
         "label": "LoginView",
         "importPath": "django.contrib.auth.views",
         "description": "django.contrib.auth.views",
@@ -222,6 +278,14 @@
         "description": "django.contrib.auth.decorators",
         "isExtraImport": true,
         "detail": "django.contrib.auth.decorators",
+        "documentation": {}
+    },
+    {
+        "label": "Q",
+        "importPath": "django.db.models",
+        "description": "django.db.models",
+        "isExtraImport": true,
+        "detail": "django.db.models",
         "documentation": {}
     },
     {
@@ -284,6 +348,33 @@
         "documentation": {}
     },
     {
+        "label": "is_followed_by",
+        "kind": 2,
+        "importPath": "core.templatetags.core_extras",
+        "description": "core.templatetags.core_extras",
+        "peekOfCode": "def is_followed_by(user, current_user):\n    \"\"\"\n    Vérifie si un utilisateur est suivi par l'utilisateur courant\n    \"\"\"\n    return Follow.objects.filter(follower=current_user, following=user).exists()\n@register.filter\ndef time_since(value):\n    \"\"\"\n    Retourne une chaîne de caractères indiquant le temps écoulé depuis la date donnée\n    \"\"\"",
+        "detail": "core.templatetags.core_extras",
+        "documentation": {}
+    },
+    {
+        "label": "time_since",
+        "kind": 2,
+        "importPath": "core.templatetags.core_extras",
+        "description": "core.templatetags.core_extras",
+        "peekOfCode": "def time_since(value):\n    \"\"\"\n    Retourne une chaîne de caractères indiquant le temps écoulé depuis la date donnée\n    \"\"\"\n    if not value:\n        return ''\n    now = timezone.now()\n    diff = now - value\n    if diff < timedelta(minutes=1):\n        return 'à l\\'instant'",
+        "detail": "core.templatetags.core_extras",
+        "documentation": {}
+    },
+    {
+        "label": "register",
+        "kind": 5,
+        "importPath": "core.templatetags.core_extras",
+        "description": "core.templatetags.core_extras",
+        "peekOfCode": "register = template.Library()\n@register.filter\ndef is_followed_by(user, current_user):\n    \"\"\"\n    Vérifie si un utilisateur est suivi par l'utilisateur courant\n    \"\"\"\n    return Follow.objects.filter(follower=current_user, following=user).exists()\n@register.filter\ndef time_since(value):\n    \"\"\"",
+        "detail": "core.templatetags.core_extras",
+        "documentation": {}
+    },
+    {
         "label": "CoreConfig",
         "kind": 6,
         "importPath": "core.apps",
@@ -297,7 +388,7 @@
         "kind": 6,
         "importPath": "core.forms",
         "description": "core.forms",
-        "peekOfCode": "class UserRegisterForm(UserCreationForm):\n    email = forms.EmailField( required=True )\n    class Meta:  # Classe qui permet de personnaliser le formulaire\n        model = User\n        fields = ['username', 'email', 'password1', 'password2']\nclass ProfileUpdateForm(forms.ModelForm):\n    class Meta:\n        model = Profile\n        fields = ['bio', 'image']",
+        "peekOfCode": "class UserRegisterForm(UserCreationForm):\n    email = forms.EmailField( required=True )\n    class Meta:  # Classe qui permet de personnaliser le formulaire\n        model = User\n        fields = ['username', 'email', 'password1', 'password2']\n    def __init__(self, *args, **kwargs):\n        super().__init__(*args, **kwargs)\n        for field in self.fields.values():\n            field.widget.attrs.update({\n                'class': 'w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:border-blue-500',",
         "detail": "core.forms",
         "documentation": {}
     },
@@ -306,7 +397,16 @@
         "kind": 6,
         "importPath": "core.forms",
         "description": "core.forms",
-        "peekOfCode": "class ProfileUpdateForm(forms.ModelForm):\n    class Meta:\n        model = Profile\n        fields = ['bio', 'image']",
+        "peekOfCode": "class ProfileUpdateForm(forms.ModelForm):\n    class Meta:\n        model = Profile\n        fields = ['bio', 'image']\nclass PostForm(forms.ModelForm):\n    class Meta:\n        model = Post\n        fields = ['content', 'image']\n        widgets = {\n            'content' : forms.Textarea(attrs={'rows': 3, 'placeholder': 'Quoi de neuf ?', 'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}),",
+        "detail": "core.forms",
+        "documentation": {}
+    },
+    {
+        "label": "PostForm",
+        "kind": 6,
+        "importPath": "core.forms",
+        "description": "core.forms",
+        "peekOfCode": "class PostForm(forms.ModelForm):\n    class Meta:\n        model = Post\n        fields = ['content', 'image']\n        widgets = {\n            'content' : forms.Textarea(attrs={'rows': 3, 'placeholder': 'Quoi de neuf ?', 'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}),\n        }",
         "detail": "core.forms",
         "documentation": {}
     },
@@ -333,7 +433,7 @@
         "kind": 6,
         "importPath": "core.models",
         "description": "core.models",
-        "peekOfCode": "class Post(models.Model):\n    author = models.ForeignKey(User, on_delete=models.CASCADE)\n    content = models.TextField()\n    image = models.ImageField(upload_to='post/', blank=True, null=True)\n    created_at = models.DateTimeField(auto_now_add=True)\n    def __str__(self):\n        return f\"{self.author.username}'s post at {self.created_at}\"",
+        "peekOfCode": "class Post(models.Model):\n    author = models.ForeignKey(User, on_delete=models.CASCADE)\n    content = models.TextField()\n    image = models.ImageField(upload_to='post/', blank=True, null=True)\n    created_at = models.DateTimeField(auto_now_add=True)\n    class Meta:\n        ordering = ['-created_at'] # posts les plus résents en premier\n    def __str__(self):\n        return f\"{self.author.username}'s post at {self.created_at}\"",
         "detail": "core.models",
         "documentation": {}
     },
@@ -360,8 +460,17 @@
         "kind": 5,
         "importPath": "core.urls",
         "description": "core.urls",
-        "peekOfCode": "urlpatterns = [\n    path('register/', views.register, name='register'),\n    path('', views.home, name='home'),\n    path('login/', auth_views.LoginView.as_view(template_name='core/login.html'), name='login'),\n    path('logout/', auth_views.LogoutView.as_view(), name='logout'),\n    path('profile/edit/', views.edit_profile, name='edit-profile'),\n]",
+        "peekOfCode": "urlpatterns = [\n    path('', views.home, name='home'),\n    path('register/', views.register, name='register'),\n    path('login/', auth_views.LoginView.as_view(template_name='core/login.html'), name='login'),\n    path('logout/', auth_views.LogoutView.as_view(), name='logout'),\n    path('profile/edit/', views.edit_profile, name='edit-profile'),\n    path('profile/<str:username>/', views.profile_view, name='profile'),\n    path('follow/<str:username>/', views.follow_user, name='follow_user'),\n    path('unfollow/<str:username>/', views.unfollow_user, name='unfollow_user'),\n    path('post/new/', views.create_post, name='create_post'),",
         "detail": "core.urls",
+        "documentation": {}
+    },
+    {
+        "label": "home",
+        "kind": 2,
+        "importPath": "core.views",
+        "description": "core.views",
+        "peekOfCode": "def home(request):\n    # 🔎 Profils déjà suivis\n    followed_users = Follow.objects.filter(follower=request.user).values_list('following__id', flat=True)\n    # 🎯 Suggestions : utilisateurs à recommander (non suivis et différent de soi)\n    suggestions = User.objects.exclude(\n        Q(id__in=followed_users) | Q(id=request.user.id)\n    )[:5]  # Limite les suggestions à 5, modifiable\n    # 📬 Gestion du formulaire de post\n    if request.method == 'POST':\n        form = PostForm(request.POST, request.FILES)",
+        "detail": "core.views",
         "documentation": {}
     },
     {
@@ -374,11 +483,11 @@
         "documentation": {}
     },
     {
-        "label": "home",
+        "label": "profile_view",
         "kind": 2,
         "importPath": "core.views",
         "description": "core.views",
-        "peekOfCode": "def home(request):\n    return render(request, 'core/home.html')\n@login_required\ndef edit_profile(request):\n    profile = request.user.profile\n    if request.method == 'POST':\n        form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)\n        if form.is_valid():\n            form.save()\n            messages.success(request, 'Profil mis à jour avec succès.')",
+        "peekOfCode": "def profile_view(request, username):\n    user_profile = get_object_or_404(User, username=username)\n    profile = user_profile.profile\n    is_following = False\n    if request.user.is_authenticated and request.user != user_profile:\n        is_following = Follow.objects.filter(follower=request.user, following=user_profile).exists()\n    followers_count = Follow.objects.filter(following=user_profile).count()\n    following_count = Follow.objects.filter(follower=user_profile).count()\n    context = {\n        'user_profile': user_profile,",
         "detail": "core.views",
         "documentation": {}
     },
@@ -387,7 +496,34 @@
         "kind": 2,
         "importPath": "core.views",
         "description": "core.views",
-        "peekOfCode": "def edit_profile(request):\n    profile = request.user.profile\n    if request.method == 'POST':\n        form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)\n        if form.is_valid():\n            form.save()\n            messages.success(request, 'Profil mis à jour avec succès.')\n            print(\"Profil mis à jour avec succès\")\n            return redirect('edit-profile')\n    else:",
+        "peekOfCode": "def edit_profile(request):\n    profile = request.user.profile\n    if request.method == 'POST':\n        form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)\n        if form.is_valid():\n            if 'image' in request.FILES:\n                profile.image = request.FILES['image']\n            form.save()\n            messages.success(request, 'Profil mis à jour avec succès.')\n            return redirect('profile', username=request.user.username)",
+        "detail": "core.views",
+        "documentation": {}
+    },
+    {
+        "label": "follow_user",
+        "kind": 2,
+        "importPath": "core.views",
+        "description": "core.views",
+        "peekOfCode": "def follow_user(request, username):\n    user_to_follow = get_object_or_404(User, username=username)\n    if user_to_follow != request.user:\n        Follow.objects.get_or_create(follower=request.user, following=user_to_follow)\n        messages.success(request, f'Vous suivez maintenant {user_to_follow.username}')\n        print(f'Vous suivez maintenant {user_to_follow.username}')\n    return redirect('profile', username=username)\n# -> Vue de Unfollow\n@login_required\ndef unfollow_user(request, username):",
+        "detail": "core.views",
+        "documentation": {}
+    },
+    {
+        "label": "unfollow_user",
+        "kind": 2,
+        "importPath": "core.views",
+        "description": "core.views",
+        "peekOfCode": "def unfollow_user(request, username):\n    user_to_unfollow = get_object_or_404(User, username=username)\n    Follow.objects.filter(follower=request.user, following=user_to_unfollow).delete()\n    messages.success(request, f'Vous ne suivez plus {user_to_unfollow.username}')\n    print(f'Vous ne suivez plus {user_to_unfollow.username}')\n    return redirect('profile', username=username)\n# -> Vue pour la création de post\n@login_required\ndef create_post(request):\n    if request.method == 'POST':",
+        "detail": "core.views",
+        "documentation": {}
+    },
+    {
+        "label": "create_post",
+        "kind": 2,
+        "importPath": "core.views",
+        "description": "core.views",
+        "peekOfCode": "def create_post(request):\n    if request.method == 'POST':\n        form = PostForm(request.POST, request.FILES)\n        if form.is_valid():\n            post = form.save(commit=False)\n            post.author = request.user\n            messages.success(request, 'Post publié avec succès.')\n            post.save()\n            return redirect('home')\n    else:",
         "detail": "core.views",
         "documentation": {}
     },
@@ -522,7 +658,7 @@
         "kind": 5,
         "importPath": "Flow.settings",
         "description": "Flow.settings",
-        "peekOfCode": "LANGUAGE_CODE = 'en-us'\nTIME_ZONE = 'UTC'\nUSE_I18N = True\nUSE_TZ = True\n# Static files (CSS, JavaScript, Images)\n# https://docs.djangoproject.com/en/5.2/howto/static-files/\nSTATIC_URL = 'static/'\nMEDIA_URL = '/media/'\nMEDIA_ROOT = BASE_DIR / 'media'\n# Default primary key field type",
+        "peekOfCode": "LANGUAGE_CODE = 'fr-fr'\nTIME_ZONE = 'Europe/Paris'\nUSE_I18N = True\nUSE_L10N = True\nUSE_TZ = True\n# Static files (CSS, JavaScript, Images)\n# https://docs.djangoproject.com/en/5.2/howto/static-files/\nSTATIC_URL = 'static/'\nMEDIA_URL = '/media/'\nMEDIA_ROOT = BASE_DIR / 'media'",
         "detail": "Flow.settings",
         "documentation": {}
     },
@@ -531,7 +667,7 @@
         "kind": 5,
         "importPath": "Flow.settings",
         "description": "Flow.settings",
-        "peekOfCode": "TIME_ZONE = 'UTC'\nUSE_I18N = True\nUSE_TZ = True\n# Static files (CSS, JavaScript, Images)\n# https://docs.djangoproject.com/en/5.2/howto/static-files/\nSTATIC_URL = 'static/'\nMEDIA_URL = '/media/'\nMEDIA_ROOT = BASE_DIR / 'media'\n# Default primary key field type\n# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field",
+        "peekOfCode": "TIME_ZONE = 'Europe/Paris'\nUSE_I18N = True\nUSE_L10N = True\nUSE_TZ = True\n# Static files (CSS, JavaScript, Images)\n# https://docs.djangoproject.com/en/5.2/howto/static-files/\nSTATIC_URL = 'static/'\nMEDIA_URL = '/media/'\nMEDIA_ROOT = BASE_DIR / 'media'\n# Default primary key field type",
         "detail": "Flow.settings",
         "documentation": {}
     },
@@ -540,7 +676,16 @@
         "kind": 5,
         "importPath": "Flow.settings",
         "description": "Flow.settings",
-        "peekOfCode": "USE_I18N = True\nUSE_TZ = True\n# Static files (CSS, JavaScript, Images)\n# https://docs.djangoproject.com/en/5.2/howto/static-files/\nSTATIC_URL = 'static/'\nMEDIA_URL = '/media/'\nMEDIA_ROOT = BASE_DIR / 'media'\n# Default primary key field type\n# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field\nDEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'",
+        "peekOfCode": "USE_I18N = True\nUSE_L10N = True\nUSE_TZ = True\n# Static files (CSS, JavaScript, Images)\n# https://docs.djangoproject.com/en/5.2/howto/static-files/\nSTATIC_URL = 'static/'\nMEDIA_URL = '/media/'\nMEDIA_ROOT = BASE_DIR / 'media'\n# Default primary key field type\n# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field",
+        "detail": "Flow.settings",
+        "documentation": {}
+    },
+    {
+        "label": "USE_L10N",
+        "kind": 5,
+        "importPath": "Flow.settings",
+        "description": "Flow.settings",
+        "peekOfCode": "USE_L10N = True\nUSE_TZ = True\n# Static files (CSS, JavaScript, Images)\n# https://docs.djangoproject.com/en/5.2/howto/static-files/\nSTATIC_URL = 'static/'\nMEDIA_URL = '/media/'\nMEDIA_ROOT = BASE_DIR / 'media'\n# Default primary key field type\n# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field\nDEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'",
         "detail": "Flow.settings",
         "documentation": {}
     },
