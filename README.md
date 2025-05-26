@@ -116,9 +116,9 @@ Les contributions sont les bienvenues ! N'hésitez pas à :
 
 ## 📞 Contact
 
-Votre Nom - [@votre_twitter](https://x.com/TresorCabs)
+X (twitter) - [@TresorCabs](https://x.com/TresorCabs)
 
-Lien du projet: [https://github.com/votre-username/Flow](https://github.com/TresorCabs/Flow_reseau_social)
+Lien du projet: [https://github.com/TresorCabs/Flow_reseau_social](https://github.com/TresorCabs/Flow_reseau_social)
 
 ## 🙏 Remerciements
 
