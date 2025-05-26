@@ -2,7 +2,7 @@
 
 Flow est une plateforme de réseau social moderne inspirée des plus grandes applications sociales, construite avec Django et TailwindCSS.
 
-![Flow Preview](https://i.imgur.com/your-screenshot.png)
+![Flow Preview](https://imgur.com/hkvcFLT)
 
 ## ✨ Fonctionnalités
 
@@ -16,7 +16,6 @@ Flow est une plateforme de réseau social moderne inspirée des plus grandes app
 
 ## 🚀 Démo en direct
 
-[Voir la démo](https://votre-site.com)
 
 ## 🛠️ Technologies utilisées
 
@@ -116,9 +115,9 @@ Les contributions sont les bienvenues ! N'hésitez pas à :
 
 ## 📞 Contact
 
-Votre Nom - [@votre_twitter](https://twitter.com/votre_twitter)
+Votre Nom - [@votre_twitter](https://x.com/TresorCabs)
 
-Lien du projet: [https://github.com/votre-username/Flow](https://github.com/votre-username/Flow)
+Lien du projet: [https://github.com/votre-username/Flow](https://github.com/TresorCabs/Flow_reseau_social)
 
 ## 🙏 Remerciements
 
